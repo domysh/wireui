@@ -60,7 +60,7 @@ FROM debian:stable-slim
 RUN useradd wgui
 
 RUN apt-get update
-RUN apt-get install -y ca-certificates wireguard jq iproute2 inotify-tools
+RUN apt-get install -y ca-certificates wireguard jq iproute2 inotify-tools iptables
 
 WORKDIR /app
 
