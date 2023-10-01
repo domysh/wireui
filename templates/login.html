@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>WireGuard UI</title>
+    <title>WireUI</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
@@ -25,7 +25,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="https://github.com/ngoduykhanh/wireguard-ui">WireGuard UI</a>
+            <a href="https://github.com/domysh/wireui">WireUI</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">
@@ -98,7 +98,7 @@
             $("#btn_login").trigger('click');
         });
 
-        $("#btn_login").click(function () {
+        $("#btn_login").on("click",function () {
             const username = $("#username").val();
             const password = $("#password").val();
             let rememberMe = false;
@@ -120,7 +120,7 @@
                     redirectNext();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     document.getElementById("message").innerHTML = `<p style="color:#ff0000">${responseJson['message']}</p>`;
                 }
             });

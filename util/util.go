@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ngoduykhanh/wireguard-ui/store"
-	"golang.org/x/mod/sumdb/dirhash"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"os"
@@ -19,9 +16,12 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/domysh/wireui/store"
+	"golang.org/x/mod/sumdb/dirhash"
+
+	"github.com/domysh/wireui/model"
 	externalip "github.com/glendc/go-external-ip"
 	"github.com/labstack/gommon/log"
-	"github.com/ngoduykhanh/wireguard-ui/model"
 	"github.com/sdomino/scribble"
 )
 
@@ -386,21 +386,12 @@ func ValidateIPAllocation(serverAddresses []string, ipAllocatedList []string, ip
 func WriteWireGuardServerConfig(tmplDir fs.FS, serverConfig model.Server, clientDataList []model.ClientData, usersList []model.User, globalSettings model.GlobalSetting) error {
 	var tmplWireguardConf string
 
-	// if set, read wg.conf template from WgConfTemplate
-	if len(WgConfTemplate) > 0 {
-		fileContentBytes, err := ioutil.ReadFile(WgConfTemplate)
-		if err != nil {
-			return err
-		}
-		tmplWireguardConf = string(fileContentBytes)
-	} else {
-		// read default wg.conf template file to string
-		fileContent, err := StringFromEmbedFile(tmplDir, "wg.conf")
-		if err != nil {
-			return err
-		}
-		tmplWireguardConf = fileContent
+	// read default wg.conf template file to string
+	fileContent, err := StringFromEmbedFile(tmplDir, "wg.conf")
+	if err != nil {
+		return err
 	}
+	tmplWireguardConf = fileContent
 
 	// parse the template
 	t, err := template.New("wg_config").Parse(tmplWireguardConf)
@@ -409,7 +400,7 @@ func WriteWireGuardServerConfig(tmplDir fs.FS, serverConfig model.Server, client
 	}
 
 	// write config file to disk
-	f, err := os.Create(globalSettings.ConfigFilePath)
+	f, err := os.Create(globalSettings.ConfigInterface)
 	if err != nil {
 		return err
 	}

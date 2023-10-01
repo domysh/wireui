@@ -20,10 +20,10 @@ import (
 	"golang.zx2c4.com/wireguard/wgctrl"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 
-	"github.com/ngoduykhanh/wireguard-ui/emailer"
-	"github.com/ngoduykhanh/wireguard-ui/model"
-	"github.com/ngoduykhanh/wireguard-ui/store"
-	"github.com/ngoduykhanh/wireguard-ui/util"
+	"github.com/domysh/wireui/emailer"
+	"github.com/domysh/wireui/model"
+	"github.com/domysh/wireui/store"
+	"github.com/domysh/wireui/util"
 )
 
 // Health check handler
@@ -64,6 +64,7 @@ func Login(db store.IStore) echo.HandlerFunc {
 		rememberMe := data["rememberMe"].(bool)
 
 		dbuser, err := db.GetUserByName(username)
+
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, jsonHTTPResponse{false, "Cannot query user from DB"})
 		}
@@ -358,9 +359,9 @@ func GetClient(db store.IStore) echo.HandlerFunc {
 
 		clientID := c.Param("id")
 		qrCodeSettings := model.QRCodeSettings{
-			Enabled:       true,
-			IncludeDNS:    true,
-			IncludeMTU:    true,
+			Enabled:    true,
+			IncludeDNS: true,
+			IncludeMTU: true,
 		}
 
 		clientData, err := db.GetClientByID(clientID, qrCodeSettings)
@@ -486,9 +487,9 @@ func EmailClient(db store.IStore, mailer emailer.Emailer, emailSubject, emailCon
 		// TODO validate email
 
 		qrCodeSettings := model.QRCodeSettings{
-			Enabled:       true,
-			IncludeDNS:    true,
-			IncludeMTU:    true,
+			Enabled:    true,
+			IncludeDNS: true,
+			IncludeMTU: true,
 		}
 		clientData, err := db.GetClientByID(payload.ID, qrCodeSettings)
 		if err != nil {
@@ -1034,7 +1035,6 @@ func ApplyServerConfig(db store.IStore, tmplDir fs.FS) echo.HandlerFunc {
 	}
 }
 
-
 // GetHashesChanges handler returns if database hashes have changed
 func GetHashesChanges(db store.IStore) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -1043,14 +1043,5 @@ func GetHashesChanges(db store.IStore) echo.HandlerFunc {
 		} else {
 			return c.JSON(http.StatusOK, jsonHTTPResponse{false, "Hashes not changed"})
 		}
-	}
-}
-
-// AboutPage handler
-func AboutPage() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return c.Render(http.StatusOK, "about.html", map[string]interface{}{
-			"baseData": model.BaseData{Active: "about", CurrentUser: currentUser(c), Admin: isAdmin(c)},
-		})
 	}
 }

@@ -106,7 +106,6 @@ function renderUserList(data) {
     });
 }
 
-
 function prettyDateTime(timeStr) {
     const dt = new Date(timeStr);
     const offsetMs = dt.getTimezoneOffset() * 60 * 1000;

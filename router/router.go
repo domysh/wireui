@@ -8,12 +8,12 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/domysh/wireui/util"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/ngoduykhanh/wireguard-ui/util"
 )
 
 // TemplateRegistry is a custom html/template renderer for Echo framework
@@ -98,7 +98,6 @@ func New(tmplDir fs.FS, extraData map[string]interface{}, secret []byte) *echo.E
 		log.Fatal(err)
 	}
 
-	aboutPageString, err := util.StringFromEmbedFile(tmplDir, "about.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -116,7 +115,6 @@ func New(tmplDir fs.FS, extraData map[string]interface{}, secret []byte) *echo.E
 	templates["users_settings.html"] = template.Must(template.New("users_settings").Funcs(funcs).Parse(tmplBaseString + tmplUsersSettingsString))
 	templates["status.html"] = template.Must(template.New("status").Funcs(funcs).Parse(tmplBaseString + tmplStatusString))
 	templates["wake_on_lan_hosts.html"] = template.Must(template.New("wake_on_lan_hosts").Funcs(funcs).Parse(tmplBaseString + tmplWakeOnLanHostsString))
-	templates["about.html"] = template.Must(template.New("about").Funcs(funcs).Parse(tmplBaseString + aboutPageString))
 
 	lvl, err := util.ParseLogLevel(util.LookupEnvOrString(util.LogLevel, "INFO"))
 	if err != nil {

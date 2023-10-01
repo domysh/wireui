@@ -220,7 +220,7 @@ Wireguard Clients
                     renderClientList(data);
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -237,9 +237,10 @@ Wireguard Clients
                 data: JSON.stringify(data),
                 success: function (data) {
                     console.log("Set client " + clientID + " status to " + status);
+                    hashCheck();
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -362,7 +363,7 @@ Wireguard Clients
 
         // pause_client_confirm button event
         $(document).ready(function () {
-            $("#pause_client_confirm").click(function () {
+            $("#pause_client_confirm").on("click",function () {
                 const client_id = $(this).val();
                 pauseClient(client_id);
                 $("#modal_pause_client").modal('hide');
@@ -381,7 +382,7 @@ Wireguard Clients
 
         // remove_client_confirm button event
         $(document).ready(function () {
-            $("#remove_client_confirm").click(function () {
+            $("#remove_client_confirm").on("click",function () {
                 const client_id = $(this).val();
                 const data = {"id": client_id};
                 $.ajax({
@@ -396,9 +397,10 @@ Wireguard Clients
                         toastr.success('Removed client successfully');
                         const divElement = document.getElementById('client_' + client_id);
                         divElement.style.display = "none";
+                        hashCheck();
                     },
                     error: function(jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                        const responseJson = JSON.parse(jqXHR.responseText);
                         toastr.error(responseJson['message']);
                     }
                 });
@@ -484,7 +486,7 @@ Wireguard Clients
                         modal.find("#_client_preshared_key").val(client.preshared_key);
                     },
                     error: function (jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                        const responseJson = JSON.parse(jqXHR.responseText);
                         toastr.error(responseJson['message']);
                     }
                 });
@@ -515,7 +517,7 @@ Wireguard Clients
                     QRCodeA.attr('href', resp.QRCode).show();
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -540,7 +542,7 @@ Wireguard Clients
                     location.reload();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -589,9 +591,10 @@ Wireguard Clients
                     toastr.success('Updated client successfully');
                      // Refresh the home page (clients page) after updating successfully
                     location.reload();
+                    hashCheck();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -625,7 +628,7 @@ Wireguard Clients
                     modal.find("#e_client_email").val(client.email);
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });

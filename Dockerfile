@@ -1,5 +1,12 @@
 # Build stage
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.17-alpine3.16 as builder
+FROM node:latest as frontend
+WORKDIR /build
+COPY package.json /build
+COPY yarn.lock /build
+# Prepare assets
+RUN yarn install
+
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:bookworm as builder
 LABEL maintainer="Khanh Ngo <k@ndk.name>"
 
 ARG BUILDPLATFORM
@@ -9,23 +16,15 @@ ARG APP_VERSION=dev
 ARG BUILD_TIME
 ARG GIT_COMMIT
 
-ARG BUILD_DEPENDENCIES="npm \
-    yarn"
-
 # Get dependencies
-RUN apk add --update --no-cache ${BUILD_DEPENDENCIES}
 
 WORKDIR /build
 
 # Add dependencies
 COPY go.mod /build
 COPY go.sum /build
-COPY package.json /build
-COPY yarn.lock /build
 
-# Prepare assets
-RUN yarn install --pure-lockfile --production && \
-    yarn cache clean
+COPY --from=frontend /build/node_modules /build/node_modules
 
 # Move admin-lte dist
 RUN mkdir -p assets/dist/js assets/dist/css && \
@@ -56,12 +55,12 @@ RUN cp -r /build/custom/ assets/
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-X 'main.appVersion=${APP_VERSION}' -X 'main.buildTime=${BUILD_TIME}' -X 'main.gitCommit=${GIT_COMMIT}'" -a -o wg-ui .
 
 # Release stage
-FROM alpine:3.16
+FROM debian:stable-slim
 
-RUN addgroup -S wgui && \
-    adduser -S -D -G wgui wgui
+RUN useradd wgui
 
-RUN apk --no-cache add ca-certificates wireguard-tools jq
+RUN apt-get update
+RUN apt-get install -y ca-certificates wireguard jq iproute2 inotify-tools
 
 WORKDIR /app
 

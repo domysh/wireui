@@ -2,14 +2,15 @@ package handler
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
-	"github.com/ngoduykhanh/wireguard-ui/model"
-	"github.com/ngoduykhanh/wireguard-ui/store"
-	"github.com/sabhiram/go-wol/wol"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/domysh/wireui/model"
+	"github.com/domysh/wireui/store"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+	"github.com/sabhiram/go-wol/wol"
 )
 
 type WakeOnLanHostSavePayload struct {

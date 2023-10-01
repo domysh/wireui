@@ -59,7 +59,7 @@ jQuery(function ($) {
 });
 
 jQuery(function ($) {
-    $('.btn-outline-success').click(function () {
+    $('.btn-outline-success').on("click",function () {
         const $this = $(this);
         $.put(base_url + 'wake_on_lan_host/' + $this.data('mac-address'), function (result) {
             $this.parents('.info-box').find('.latest-used').text(prettyDateTime(result));
@@ -80,7 +80,7 @@ jQuery(function ($) {
         $remove_client_confirm.val($editBtn.data('mac-address'));
     })
 
-    $remove_client_confirm.click(function () {
+    $remove_client_confirm.on("click",function () {
         const macAddress = $remove_client_confirm.val().replaceAll(":", "-");
         $.delete(base_url + 'wake_on_lan_host/' + macAddress);
         $('#' + macAddress).remove();
@@ -156,9 +156,10 @@ jQuery(function ($) {
                     }
                     $modal_wake_on_lan_host.modal('hide');
                     toastr.success('Wake on Lan Host Save successfully');
+                    hashCheck();
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
 
                     if (typeof (console) != 'undefined')

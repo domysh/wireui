@@ -73,7 +73,7 @@ Profile
                 admin = user.admin;
             },
             error: function (jqXHR, exception) {
-                const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                const responseJson = JSON.parse(jqXHR.responseText);
                 toastr.error(responseJson['message']);
             }
         });
@@ -93,10 +93,11 @@ Profile
             data: JSON.stringify(data),
             success: function (data) {
                 toastr.success("Updated user information successfully");
-                location.reload();
+                hashCheck();
+                location.reload();   
             },
             error: function (jqXHR, exception) {
-                const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                const responseJson = JSON.parse(jqXHR.responseText);
                 toastr.error(responseJson['message']);
             }
         });

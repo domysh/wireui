@@ -12,8 +12,8 @@ import (
 	"github.com/skip2/go-qrcode"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 
-	"github.com/ngoduykhanh/wireguard-ui/model"
-	"github.com/ngoduykhanh/wireguard-ui/util"
+	"github.com/domysh/wireui/model"
+	"github.com/domysh/wireui/util"
 )
 
 type JsonDB struct {
@@ -105,7 +105,7 @@ func (o *JsonDB) Init() error {
 		globalSetting.PersistentKeepalive = util.LookupEnvOrInt(util.PersistentKeepaliveEnvVar, util.DefaultPersistentKeepalive)
 		globalSetting.FirewallMark = util.LookupEnvOrString(util.FirewallMarkEnvVar, util.DefaultFirewallMark)
 		globalSetting.Table = util.LookupEnvOrString(util.TableEnvVar, util.DefaultTable)
-		globalSetting.ConfigFilePath = util.LookupEnvOrString(util.ConfigFilePathEnvVar, util.DefaultConfigFilePath)
+		globalSetting.ConfigInterface = "/etc/wireguard/" + util.LookupEnvOrString(util.ConfigInterfaceEnvVar, util.DefaultConfigInterface) + ".conf"
 		globalSetting.UpdatedAt = time.Now().UTC()
 		o.conn.Write("server", "global_settings", globalSetting)
 		os.Chmod(globalSettingPath, 0600)

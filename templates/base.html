@@ -27,7 +27,8 @@
     <link rel="stylesheet" href="{{.basePath}}/static/dist/css/adminlte.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-
+    <!-- Custom css -->
+    <link rel="stylesheet" type="text/css" href="{{.basePath}}/static/custom/css/styles.css" />
     <!-- START: On page css -->
     {{template "top_css" .}}
     <!-- END: On page css -->
@@ -68,7 +69,14 @@
             </form>
 
             <!-- Right navbar links -->
-            <div class="navbar-nav ml-auto">
+            <div class="navbar-nav ml-auto" style="align-items:center">
+                <i class="fas fa-info-circle" data-toggle="tooltip" style="margin-right:10px"
+                    data-original-title="Enabling this option, every change will be immediatly applied">
+                </i>
+                <label class="switch">
+                    <input type="checkbox" id="auto-apply-wg-config" >
+                    <span class="slider round"></span>
+                </label>
                 <button style="margin-left: 0.5em;" type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
                     data-target="#modal_new_client"><i class="nav-icon fas fa-plus"></i> New
                     Client</button>
@@ -87,7 +95,7 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="{{.basePath}}" class="brand-link">
-                <span class="brand-text">&nbsp; WIREGUARD UI</span>
+                <span class="brand-text">&nbsp; WireUI</span>
             </a>
 
             <!-- Sidebar -->
@@ -172,15 +180,6 @@
                                 <p>
                                     WoL Hosts
                                 </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">ABOUT</li>
-                        <li class="nav-item">
-                            <a href="{{.basePath}}/about" class="nav-link {{if eq .baseData.Active "about" }}active{{end}}">
-                            <i class="nav-icon fas  fa-solid fa-id-card"></i>
-                            <p>
-                                About
-                            </p>
                             </a>
                         </li>
                     </ul>
@@ -328,7 +327,7 @@
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> {{ .appVersion }}
             </div>
-            <strong>Copyright &copy; <script>document.write(new Date().getFullYear())</script> <a href="https://github.com/ngoduykhanh/wireguard-ui">Wireguard UI</a>.</strong> All rights
+            <strong>Copyright &copy; <script>document.write(new Date().getFullYear())</script> <a href="https://github.com/domysh/wireui">WireUI</a>.</strong> All rights
             reserved.
         </footer>
         -->
@@ -362,29 +361,64 @@
             $('[data-toggle="tooltip"]').tooltip()
         })
 
-        $(document).ready(function () {
+        function isAutoApply(){
+            return localStorage.getItem("auto-apply-wg-config") === "true"
+        }
 
-                $.ajax({
-                    cache: false,
-                    method: 'GET',
-                    url: '{{.basePath}}/test-hash',
-                    dataType: 'json',
-                    contentType: "application/json",
-                    success: function(data) {
-                        if (data.status) {
+        function applyWgConfig() {
+            $.ajax({
+                cache: false,
+                method: 'POST',
+                url: '{{.basePath}}/api/apply-wg-config',
+                dataType: 'json',
+                contentType: "application/json",
+                success: function(data) {
+                    $("#modal_apply_config").modal('hide');
+                    if(!isAutoApply()){
+                        toastr.success('Applied config successfully');
+                    }
+                },
+                error: function(jqXHR, exception) {
+                    const responseJson = JSON.parse(jqXHR.responseText);
+                    toastr.error(responseJson['message']);
+                }
+            });
+        }
+
+        function hashCheck(){
+            $.ajax({
+                cache: false,
+                method: 'GET',
+                url: '{{.basePath}}/test-hash',
+                dataType: 'json',
+                contentType: "application/json",
+                success: function(data) {
+                    if (data.status) {
+                        if (isAutoApply()) {
+                            applyWgConfig()
+                        }else{
                             $("#apply-config-button").show()
                         }
-                        else
-                        {
-                            $("#apply-config-button").hide()
-                        }
-                    },
-                    error: function(jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
-                        toastr.error(responseJson['message']);
+                    }else{
+                        $("#apply-config-button").hide()
                     }
-                });
+                },
+                error: function(jqXHR, exception) {
+                    const responseJson = JSON.parse(jqXHR.responseText);
+                    toastr.error(responseJson['message']);
+                }
+            });
+        }
 
+        $(document).ready(hashCheck);
+
+        $('#auto-apply-wg-config').on("click", function () {
+            $("#auto-apply-wg-config")[0].checked ? localStorage.setItem("auto-apply-wg-config", true) : localStorage.setItem("auto-apply-wg-config", false)
+            hashCheck();
+        });
+
+        $(document).ready(function () {
+             $("#auto-apply-wg-config").prop("checked", isAutoApply())
         });
 
         
@@ -401,7 +435,7 @@
                     renderClientList([resp]);
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -451,9 +485,10 @@
                     if (window.location.pathname === "{{.basePath}}/") {
                         populateClient(resp.id);
                     }
+                    hashCheck();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -471,10 +506,11 @@
                 success: function(data) {
                     data.forEach(function (item, index) {
                         $('#client_allocated_ips').addTag(item);
-                    })
+                    });
+                    hashCheck();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -563,23 +599,7 @@
 
         // apply_config_confirm button event
         $(document).ready(function () {
-            $("#apply_config_confirm").click(function () {
-                $.ajax({
-                    cache: false,
-                    method: 'POST',
-                    url: '{{.basePath}}/api/apply-wg-config',
-                    dataType: 'json',
-                    contentType: "application/json",
-                    success: function(data) {
-                        $("#modal_apply_config").modal('hide');
-                        toastr.success('Applied config successfully');
-                    },
-                    error: function(jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
-                        toastr.error(responseJson['message']);
-                    }
-                });
-            });
+            $("#apply_config_confirm").on("click",applyWgConfig);
         });
     </script>
 

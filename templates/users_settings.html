@@ -103,7 +103,7 @@ Users Settings
                 renderUserList(data);
             },
             error: function (jqXHR, exception) {
-                const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                const responseJson = JSON.parse(jqXHR.responseText);
                 toastr.error(responseJson['message']);
             }
         });
@@ -131,7 +131,7 @@ Users Settings
 
     // remove_user_confirm button event
     $(document).ready(function () {
-        $("#remove_user_confirm").click(function () {
+        $("#remove_user_confirm").on("click",function () {
             const user_name = $(this).val();
             const data = {"username": user_name};
             $.ajax({
@@ -146,10 +146,11 @@ Users Settings
                     toastr.success('Removed user successfully');
                     const divElement = document.getElementById('user_' + user_name);
                     divElement.style.display = "none";
+                    hashCheck();
                     location.reload()
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -182,7 +183,7 @@ Users Settings
                         modal.find("#_admin").prop("checked", user.admin);
                     },
                     error: function (jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                        const responseJson = JSON.parse(jqXHR.responseText);
                         toastr.error(responseJson['message']);
                     }
                 });
@@ -222,10 +223,11 @@ Users Settings
                 data: JSON.stringify(data),
                 success: function (data) {
                     toastr.success("Updated user information successfully");
+                    hashCheck();
                     location.reload();
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -239,10 +241,11 @@ Users Settings
                 data: JSON.stringify(data),
                 success: function (data) {
                     toastr.success("Created user successfully");
+                    hashCheck();
                     location.reload();
                 },
                 error: function (jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });

@@ -143,9 +143,10 @@ Wireguard Server Settings
                 success: function(data) {
                     $("#modal_new_client").modal('hide');
                     toastr.success('Updated Wireguard server interface addresses successfully');
+                    hashCheck();
                 },
                 error: function(jqXHR, exception) {
-                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    const responseJson = JSON.parse(jqXHR.responseText);
                     toastr.error(responseJson['message']);
                 }
             });
@@ -207,7 +208,7 @@ Wireguard Server Settings
 
         // Wireguard Key Pair generation confirmation button
         $(document).ready(function () {
-            $("#btn_generate_confirm").click(function () {
+            $("#btn_generate_confirm").on("click",function () {
                 $.ajax({
                     cache: false,
                     method: 'POST',
@@ -220,9 +221,10 @@ Wireguard Server Settings
                         // update the UI
                         $("#private_key").val(data['private_key']);
                         $("#public_key").val(data['public_key']);
+                        hashCheck();
                     },
                     error: function(jqXHR, exception) {
-                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                        const responseJson = JSON.parse(jqXHR.responseText);
                         toastr.error(responseJson['message']);
                     }
                 });
@@ -231,7 +233,7 @@ Wireguard Server Settings
 
         // Show private key button event
         $(document).ready(function () {
-            $("#btn_show_private_key").click(function () {
+            $("#btn_show_private_key").on("click",function () {
                 const privateElement = document.getElementById("private_key");
                 const btnElement = document.getElementById("btn_show_private_key");
                 if (privateElement.type === 'password') {

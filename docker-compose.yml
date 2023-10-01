@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  wg:
+    build: .
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    environment:
+      - WGUI_USERNAME=admin
+      - WGUI_PASSWORD=admin
+      - BIND_ADDRESS=0.0.0.0:5002
+      - WGUI_DEFAULT_CLIENT_ALLOWED_IPS=0.0.0.0/0, ::/0
+      - WGUI_INTERFACE=wg0
+      - SMTP_HOSTNAME
+      - SMTP_USERNAME
+      - SMTP_PORT
+      - SMTP_PASSWORD
+      - SMTP_AUTH_TYPE
+      - EMAIL_FROM_ADDRESS
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+
+    volumes:
+      - ./db:/app/db
+      - /etc/wireguard:/etc/wireguard

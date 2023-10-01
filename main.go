@@ -4,19 +4,20 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
-	"github.com/ngoduykhanh/wireguard-ui/store"
 	"io/fs"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/ngoduykhanh/wireguard-ui/emailer"
-	"github.com/ngoduykhanh/wireguard-ui/handler"
-	"github.com/ngoduykhanh/wireguard-ui/router"
-	"github.com/ngoduykhanh/wireguard-ui/store/jsondb"
-	"github.com/ngoduykhanh/wireguard-ui/util"
+	"github.com/domysh/wireui/store"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
+
+	"github.com/domysh/wireui/emailer"
+	"github.com/domysh/wireui/handler"
+	"github.com/domysh/wireui/router"
+	"github.com/domysh/wireui/store/jsondb"
+	"github.com/domysh/wireui/util"
 )
 
 var (
@@ -37,9 +38,7 @@ var (
 	flagSmtpEncryption string = "STARTTLS"
 	flagSendgridApiKey string
 	flagEmailFrom      string
-	flagEmailFromName  string = "WireGuard UI"
-	flagSessionSecret  string = util.RandomString(32)
-	flagWgConfTemplate string
+	flagEmailFromName  string = "WireUI"
 	flagBasePath       string
 )
 
@@ -77,8 +76,6 @@ func init() {
 	flag.StringVar(&flagSendgridApiKey, "sendgrid-api-key", util.LookupEnvOrString("SENDGRID_API_KEY", flagSendgridApiKey), "Your sendgrid api key.")
 	flag.StringVar(&flagEmailFrom, "email-from", util.LookupEnvOrString("EMAIL_FROM_ADDRESS", flagEmailFrom), "'From' email address.")
 	flag.StringVar(&flagEmailFromName, "email-from-name", util.LookupEnvOrString("EMAIL_FROM_NAME", flagEmailFromName), "'From' email name.")
-	flag.StringVar(&flagSessionSecret, "session-secret", util.LookupEnvOrString("SESSION_SECRET", flagSessionSecret), "The key used to encrypt session cookies.")
-	flag.StringVar(&flagWgConfTemplate, "wg-conf-template", util.LookupEnvOrString("WG_CONF_TEMPLATE", flagWgConfTemplate), "Path to custom wg.conf template.")
 	flag.StringVar(&flagBasePath, "base-path", util.LookupEnvOrString("BASE_PATH", flagBasePath), "The base path of the URL")
 	flag.Parse()
 
@@ -95,26 +92,24 @@ func init() {
 	util.SendgridApiKey = flagSendgridApiKey
 	util.EmailFrom = flagEmailFrom
 	util.EmailFromName = flagEmailFromName
-	util.SessionSecret = []byte(flagSessionSecret)
-	util.WgConfTemplate = flagWgConfTemplate
+	util.SessionSecret = []byte(util.RandomString(32))
 	util.BasePath = util.ParseBasePath(flagBasePath)
 
 	// print only if log level is INFO or lower
 	if lvl, _ := util.ParseLogLevel(util.LookupEnvOrString(util.LogLevel, "INFO")); lvl <= log.INFO {
 		// print app information
-		fmt.Println("Wireguard UI")
+		fmt.Println("WiregUI")
 		fmt.Println("App Version\t:", appVersion)
 		fmt.Println("Git Commit\t:", gitCommit)
 		fmt.Println("Git Ref\t\t:", gitRef)
 		fmt.Println("Build Time\t:", buildTime)
-		fmt.Println("Git Repo\t:", "https://github.com/ngoduykhanh/wireguard-ui")
+		fmt.Println("Git Repo\t:", "https://github.com/domysh/wireui")
 		fmt.Println("Authentication\t:", !util.DisableLogin)
 		fmt.Println("Bind address\t:", util.BindAddress)
 		//fmt.Println("Sendgrid key\t:", util.SendgridApiKey)
 		fmt.Println("Email from\t:", util.EmailFrom)
 		fmt.Println("Email from name\t:", util.EmailFromName)
 		//fmt.Println("Session secret\t:", util.SessionSecret)
-		fmt.Println("Custom wg.conf\t:", util.WgConfTemplate)
 		fmt.Println("Base path\t:", util.BasePath+"/")
 	}
 }
@@ -167,7 +162,6 @@ func main() {
 	}
 
 	app.GET(util.BasePath+"/test-hash", handler.GetHashesChanges(db), handler.ValidSession)
-	app.GET(util.BasePath+"/about", handler.AboutPage())
 	app.GET(util.BasePath+"/_health", handler.Health())
 	app.GET(util.BasePath+"/favicon", handler.Favicon())
 	app.POST(util.BasePath+"/new-client", handler.NewClient(db), handler.ValidSession, handler.ContentTypeJson)
@@ -208,7 +202,7 @@ func initServerConfig(db store.IStore, tmplDir fs.FS) {
 		log.Fatalf("Cannot get global settings: ", err)
 	}
 
-	if _, err := os.Stat(settings.ConfigFilePath); err == nil {
+	if _, err := os.Stat(settings.ConfigInterface); err == nil {
 		// file exists, don't overwrite it implicitly
 		return
 	}
