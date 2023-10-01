@@ -6,14 +6,13 @@ file="/etc/wireguard/$conf.conf"
 # manage wireguard stop/start with the container
 
 wg-quick up "$conf"
-trap 'wg-quick down "$file"' SIGTERM # catches container stop
+trap 'wg-quick down "$conf"' SIGTERM # catches container stop
 
 # manage wireguard restarts when config file changes
 [[ -f $file ]] || touch "$file" # inotifyd needs file to exist
 while true; do
     inotifywait "$file" -e close_write
-    wg-quick down "$conf"
-    wg-quick up "$conf"
+    wg syncconf $conf <(wg-quick strip $conf)
 done &
 
 
