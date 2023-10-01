@@ -67,12 +67,6 @@ Global Settings
                                     name="table" placeholder="auto"
                                     value="{{ .globalSettings.Table }}">
                             </div>
-                            <div class="form-group">
-                                <label for="config_interface">Wireguard Interface Name</label>
-                                <input type="text" class="form-control" id="config_interface"
-                                    name="config_interface" placeholder="E.g. wg0"
-                                    value="{{ .globalSettings.ConfigInterface }}">
-                            </div>
                         </div>
                         <!-- /.card-body -->
 
@@ -109,10 +103,7 @@ Global Settings
                             <dt>5. Firewall Mark</dt>
                             <dd>Add a matching <code>fwmark</code> on all packets going out of a WireGuard non-default-route tunnel. Default value: <code>0xca6c</code></dd>
                             <dt>6. Table</dt>
-                            <dd>Value for the <code>Table</code> setting in the wg conf file. Default value: <code>auto</code></dd>                            
-                            <dt>7. Wireguard Config File Path</dt>
-                            <dd>The path of your Wireguard server config file. Please make sure the parent directory
-                                exists and is writable.</dd>
+                            <dd>Value for the <code>Table</code> setting in the wg conf file. Default value: <code>auto</code></dd>
                         </dl>
                     </div>
                 </div>
@@ -159,8 +150,7 @@ Global Settings
             const persistent_keepalive = $("#persistent_keepalive").val();
             const firewall_mark = $("#firewall_mark").val();
             const table = $("#table").val();
-            const config_interface = $("#config_interface").val();
-            const data = {"endpoint_address": endpoint_address, "dns_servers": dns_servers, "mtu": mtu, "persistent_keepalive": persistent_keepalive, "firewall_mark": firewall_mark, "table": table, "config_interface": config_interface};
+            const data = { endpoint_address, dns_servers, mtu, persistent_keepalive, firewall_mark, table};
 
             $.ajax({
                 cache: false,
@@ -228,10 +218,7 @@ Global Settings
                     },
                     persistent_keepalive: {
                         digits: true
-                    },
-                    config_interface: {
-                        required: true
-                    },
+                    }
                     firewall_mark: {
                         required: false
                     },
@@ -246,9 +233,6 @@ Global Settings
                     },
                     persistent_keepalive: {
                         digits: "Persistent keepalive must be an integer"
-                    },
-                    config_interface: {
-                        required: "Please enter WireGuard config file path"
                     }
                 },
                 errorElement: 'span',

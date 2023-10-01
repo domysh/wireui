@@ -5,6 +5,7 @@ services:
     image: ghcr.io/domysh/wireui:latest
     cap_add:
       - NET_ADMIN
+    restart: unless-stopped
     network_mode: host
     environment:
       - WGUI_USERNAME=admin

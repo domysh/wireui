@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/domysh/wireui/store"
@@ -40,6 +41,7 @@ var (
 	flagEmailFrom      string
 	flagEmailFromName  string = "WireUI"
 	flagBasePath       string
+	flagInterfaceName  string = "wg0"
 )
 
 const (
@@ -77,6 +79,7 @@ func init() {
 	flag.StringVar(&flagEmailFrom, "email-from", util.LookupEnvOrString("EMAIL_FROM_ADDRESS", flagEmailFrom), "'From' email address.")
 	flag.StringVar(&flagEmailFromName, "email-from-name", util.LookupEnvOrString("EMAIL_FROM_NAME", flagEmailFromName), "'From' email name.")
 	flag.StringVar(&flagBasePath, "base-path", util.LookupEnvOrString("BASE_PATH", flagBasePath), "The base path of the URL")
+	flag.StringVar(&flagInterfaceName, "interface-name", util.LookupEnvOrString("WGUI_INTERFACE", flagInterfaceName), "The name of the wireguard interface")
 	flag.Parse()
 
 	// update runtime config
@@ -94,6 +97,8 @@ func init() {
 	util.EmailFromName = flagEmailFromName
 	util.SessionSecret = []byte(util.RandomString(32))
 	util.BasePath = util.ParseBasePath(flagBasePath)
+	util.InterfaceName = flagInterfaceName
+	util.WgConfigPath = filepath.Join("/etc/wireguard/", util.InterfaceName) + ".conf"
 
 	// print only if log level is INFO or lower
 	if lvl, _ := util.ParseLogLevel(util.LookupEnvOrString(util.LogLevel, "INFO")); lvl <= log.INFO {
@@ -202,7 +207,7 @@ func initServerConfig(db store.IStore, tmplDir fs.FS) {
 		log.Fatalf("Cannot get global settings: ", err)
 	}
 
-	if _, err := os.Stat("/etc/wireguard/" + settings.ConfigInterface + ".conf"); err == nil {
+	if _, err := os.Stat(util.WgConfigPath); err == nil {
 		// file exists, don't overwrite it implicitly
 		return
 	}

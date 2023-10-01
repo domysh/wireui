@@ -18,6 +18,8 @@ var (
 	EmailFromName  string
 	SessionSecret  []byte
 	BasePath       string
+	InterfaceName  string
+	WgConfigPath   string
 )
 
 const (

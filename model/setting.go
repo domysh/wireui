@@ -12,6 +12,5 @@ type GlobalSetting struct {
 	PersistentKeepalive int       `json:"persistent_keepalive,string"`
 	FirewallMark        string    `json:"firewall_mark"`
 	Table               string    `json:"table"`
-	ConfigInterface     string    `json:"config_interface"`
 	UpdatedAt           time.Time `json:"updated_at"`
 }
