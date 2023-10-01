@@ -5,7 +5,7 @@ services:
     build: .
     cap_add:
       - NET_ADMIN
-    network_mode: host
+    #network_mode: host
     environment:
       - WGUI_USERNAME=admin
       - WGUI_PASSWORD=admin
@@ -22,7 +22,9 @@ services:
       driver: json-file
       options:
         max-size: 50m
+    ports:
+      - 5002:5002
 
     volumes:
       - ./db:/app/db
-      - /etc/wireguard:/etc/wireguard
+      - ./wireguard:/etc/wireguard

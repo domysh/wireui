@@ -5,6 +5,8 @@
 *.so
 *.dylib
 wireguard-ui
+wireguard/**
+wireguard
 
 # Test binary, built with `go test -c`
 *.test

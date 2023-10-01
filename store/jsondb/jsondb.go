@@ -105,7 +105,7 @@ func (o *JsonDB) Init() error {
 		globalSetting.PersistentKeepalive = util.LookupEnvOrInt(util.PersistentKeepaliveEnvVar, util.DefaultPersistentKeepalive)
 		globalSetting.FirewallMark = util.LookupEnvOrString(util.FirewallMarkEnvVar, util.DefaultFirewallMark)
 		globalSetting.Table = util.LookupEnvOrString(util.TableEnvVar, util.DefaultTable)
-		globalSetting.ConfigInterface = "/etc/wireguard/" + util.LookupEnvOrString(util.ConfigInterfaceEnvVar, util.DefaultConfigInterface) + ".conf"
+		globalSetting.ConfigInterface = util.LookupEnvOrString(util.ConfigInterfaceEnvVar, util.DefaultConfigInterface)
 		globalSetting.UpdatedAt = time.Now().UTC()
 		o.conn.Write("server", "global_settings", globalSetting)
 		os.Chmod(globalSettingPath, 0600)

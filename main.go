@@ -202,7 +202,7 @@ func initServerConfig(db store.IStore, tmplDir fs.FS) {
 		log.Fatalf("Cannot get global settings: ", err)
 	}
 
-	if _, err := os.Stat(settings.ConfigInterface); err == nil {
+	if _, err := os.Stat("/etc/wireguard/" + settings.ConfigInterface + ".conf"); err == nil {
 		// file exists, don't overwrite it implicitly
 		return
 	}
