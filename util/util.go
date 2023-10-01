@@ -400,7 +400,7 @@ func WriteWireGuardServerConfig(tmplDir fs.FS, serverConfig model.Server, client
 	}
 
 	// write config file to disk
-	f, err := os.Create(globalSettings.ConfigInterface)
+	f, err := os.Create("/etc/wireguard/" + globalSettings.ConfigInterface + ".conf")
 	if err != nil {
 		return err
 	}
