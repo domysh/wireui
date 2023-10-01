@@ -1,10 +1,8 @@
 # WireUI 🌐
 
-# THIS FORK IS IN DEVELOPPING
-
 A web user interface to manage your WireGuard setup forked from [wireguard-ui](https://github.com/ngoduykhanh/wireguard-ui)
 
-## Additional Features (TODO)
+## Additional Features ( to complete )
 
 - [ ] Add nftables rules associated with each client (this allow to trust client allowed ips also server side)
 - [X] Add an option to auto-apply config changes
