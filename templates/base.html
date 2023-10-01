@@ -362,7 +362,8 @@
         })
 
         function isAutoApply(){
-            return localStorage.getItem("auto-apply-wg-config") === "true"
+            const res = localStorage.getItem("auto-apply-wg-config")
+            return res === "true" || res === null
         }
 
         function applyWgConfig() {
