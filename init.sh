@@ -9,7 +9,7 @@ wg-quick up "$conf"
 trap 'wg-quick down "$file"' SIGTERM # catches container stop
 
 # manage wireguard restarts when config file changes
-[[ -f $file ]] || touch "/etc/wireguard/$file.conf" # inotifyd needs file to exist
+[[ -f $file ]] || touch "$file" # inotifyd needs file to exist
 while true; do
     inotifywait "$file" -e close_write
     wg-quick down "$conf"
