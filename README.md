@@ -2,16 +2,19 @@
 
 A web user interface to manage your WireGuard setup forked from [wireguard-ui](https://github.com/ngoduykhanh/wireguard-ui)
 
-## Additional Features ( to complete )
+## Additional Features
 
-- [ ] Add nftables rules associated with each client (this allow to trust client allowed ips also server side)
-- [X] Add an option to auto-apply config changes
-- [X] Other small changes and improvements
+- Add an option to auto-apply config changes
+- Other small changes and improvements (bug fixes, deploy env, base container on debian)
+
+## Future Improvements
+- Recreate Frontend with React
 
 ## Features
 
 - Friendly UI
 - Authentication
+- Lightweight
 - Manage extra client information (name, email, etc)
 - Retrieve client config using QR code / file / email
 
@@ -84,6 +87,8 @@ These environment variables are used to set the defaults used in `New Client` di
 ## License
 
 MIT. See [LICENSE](https://github.com/domysh/wireui/blob/master/LICENSE).
+
+WireGuard® is a registered trademark of Jason A. Donenfeld.
 
 ## Support the original author
 
