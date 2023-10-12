@@ -98,7 +98,7 @@ func init() {
 	util.SessionSecret = []byte(util.RandomString(32))
 	util.BasePath = util.ParseBasePath(flagBasePath)
 	util.InterfaceName = flagInterfaceName
-	util.WgConfigPath = filepath.Join("/etc/wireguard/", util.InterfaceName) + ".conf"
+	util.WgConfigPath = "/etc/wireguard/" + util.InterfaceName + ".conf"
 
 	// print only if log level is INFO or lower
 	if lvl, _ := util.ParseLogLevel(util.LookupEnvOrString(util.LogLevel, "INFO")); lvl <= log.INFO {
